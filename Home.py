@@ -33,6 +33,7 @@ def intro():
     I've always enjoyed working with data and using it to drive decisions. I'm always looking to improve my skills and learn new things. Previously,
     I have used tools such as **Python**, **SQL**, **Power BI**, **Excel/Spreadsheets** for my data analytic projects.""", unsafe_allow_html=True)
     st.write(icons, unsafe_allow_html=True)
+    st.martdown("""You can find some of my projects by clicking the **>** button on the left side of the screen.""")
     resume_png = Image.open('kevinnguyenresumev1-1.png')
     st.image(resume_png, caption='PNG Resume', use_column_width=True)
     with open("kevinnguyenresumev1.pdf", "rb") as pdf_file:
