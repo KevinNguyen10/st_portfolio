@@ -1,0 +1,52 @@
+h1 {
+    color: #c888de;
+    font-family: 'Times New Roman';
+}
+
+.css-15zrgzn {display: none}
+
+strong:hover {
+    color: #c888de;
+    transition: all .2s linear;
+}
+
+i {
+    padding: 0 30px 0 0;
+}
+
+i.fab.fa-linkedin-in.fa-2x:hover {
+  color: #c888de;
+  transition: all .2s linear;
+}
+
+i.fa-brands.fa-github.fa-2x:hover {
+  color: #c888de;
+  transition: all .2s linear;
+}
+
+/* Add Here */
+
+h3 {
+  white-space: nowrap;
+  overflow: hidden;    
+  font-family: 'Times New Roman';  
+  font-size: 28px;
+  color: #ffffff;
+}
+
+/* Animation */
+h3 {
+  animation: animated-text 2s steps(30,end) 1s 1 normal both;
+}
+
+/* text animation */
+
+@keyframes animated-text{
+  from{width: 0;}
+  to{width: 472px;}
+}
+
+main.css-k1vhr4.egzxvld3 {
+  background-color: aqua;
+}
+/* Emerson Co-op CSS */
