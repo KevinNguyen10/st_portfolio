@@ -11,12 +11,6 @@ def load_css(file_name):
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-def st_display_pdf(pdf_file):
-    with open(pdf_file, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="950px" type="application/pdf"></iframe>'
-        st.markdown(pdf_display, unsafe_allow_html=True)
-
 def intro():
     import streamlit as st
     load_css('style.css')
@@ -39,7 +33,14 @@ def intro():
     I've always enjoyed working with data and using it to drive decisions. I'm always looking to improve my skills and learn new things. Previously,
     I have used tools such as **Python**, **SQL**, **Power BI**, **Excel/Spreadsheets** for my data analytic projects.""", unsafe_allow_html=True)
     st.write(icons, unsafe_allow_html=True)
-    st_display_pdf('kevinnguyenresumev1.pdf')
+    resume_png = Image.open('kevinnguyenresumev1-1.png')
+    st.image(resume_png, caption='PNG Resume', use_column_width=True)
+    with open("kevinnguyenresumev1.pdf", "rb") as pdf_file:
+        PDFbyte = pdf_file.read()
+    st.download_button(label="Download PDF Resume",
+                    data=PDFbyte,
+                    file_name="kevinnguyenresume.pdf",
+                    mime='application/octet-stream')
     
 
 def emerson_coop_experience(): # Emerson Co-op Experience SECTION DONE!
