@@ -39,7 +39,7 @@ def intro():
     I've always enjoyed working with data and using it to drive decisions. I'm always looking to improve my skills and learn new things. Previously,
     I have used tools such as **Python**, **SQL**, **Power BI**, **Excel/Spreadsheets** for my data analytic projects.""", unsafe_allow_html=True)
     st.write(icons, unsafe_allow_html=True)
-    st_display_pdf('kevinnguyenresumev1.pdf')
+    st_display_pdf('st_portfolio/kevinnguyenresumev1.pdf')
     
 
 def emerson_coop_experience(): # Emerson Co-op Experience SECTION DONE!
