@@ -1,9 +1,6 @@
 # import necessary libraries
 import streamlit as st
-import streamlit.components.v1 as components
 from PIL import Image
-import pandas as pd
-import base64
 
 # st.set_page_config(layout="wide")
 
