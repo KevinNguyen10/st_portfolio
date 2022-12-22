@@ -245,7 +245,7 @@ def SQL_Database_Project():# SQL Database Project SECTION DONE!
     st.title('SQL Database Project')
     st.write('''This was a project I worked on for my SQL database management class for Fall of 2021. My group and I were tasked with creating a SQL database from any data source that the group
     found interesting. We ended up doing out database project on Netflix from a data source found on Kaggle. The data was from 2011-2020 and contained information on the movies and TV shows. For this
-    showcase I will be showing the Analsis portion of the project and the code and queries used.''')
+    showcase I will be showing the Analysis portion of the project and the code and queries used.''')
     st.subheader('SQL code for the tables that were created.')
     sql_tables = """
 // SHOWS
