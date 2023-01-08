@@ -371,12 +371,211 @@ order bY COUNT(S.ShowID) DESC;
     image3 = Image.open('SQLQ3.png')
     st.image(image3, caption='SQL Query 3')
 def personal_projects():
-    pass
+    # import necessary libraries
+    import pandas as pd
+    from datetime import datetime
+    import matplotlib.pyplot as plt
+    import missingno as msno
+    import numpy as np
+    import plotly.graph_objects as go
+    import plotly.express as px
+    import streamlit as st
+
+    # ETL Process
+    # load the datasets
+    apr_df = pd.read_csv('Attendance_Sheets\Apr_Attendance.csv')
+    june_df = pd.read_csv('Attendance_Sheets\June_Attendance.csv')
+    may_df = pd.read_csv('Attendance_Sheets\May_Attendance.csv')
+    # unpivot the dataframes using melt function
+    apr_unpivot = apr_df.melt(id_vars=['Unnamed: 1', 'AtliQ'], var_name='Date', value_name='Attendance')
+    june_unpivot = june_df.melt(id_vars=['Unnamed: 1', 'AtliQ'], var_name='Date', value_name='Attendance')
+    may_unpivot = may_df.melt(id_vars=['Unnamed: 1', 'AtliQ'], var_name='Date', value_name='Attendance')
+    # combine the dataframes using concat function
+    combined_df = pd.concat([apr_unpivot, may_unpivot, june_unpivot], ignore_index=True)
+    combined_df.to_csv('Attendance_Sheets\combined_attendance.csv', index=False)
+
+    # Data Cleaning
+    # load the data
+    df = pd.read_csv('Attendance_Sheets\combined_attendance.csv')
+    # rename the columns
+    df.columns = ['Name', 'Employee Code', 'Date', 'Attendance Type']
+    # drop all rows if the Name contains "Name"
+    df = df.drop(index=df[df['Name'].astype(str).str.contains('Name')].index)
+    # create a new column for day
+    df['Day'] = df['Date'].str.split(' ').str[0]
+    # create a new column for month
+    df['Month'] = df['Date'].str.split(' ').str[2]
+    # create a new column for year
+    df['Year'] = '2022'
+    # drop the Date column
+    df = df.drop(columns=['Date'])
+    # create a mapping dictionary for 3 months
+    d = {
+        'Apr': 4, 
+        'May': 5, 
+        'Jun': 6
+        }
+    # map the month column
+    df['Month Number'] = pd.to_numeric(df['Month'].map(d), errors='coerce')
+    # check if the Day column is a number if it is a number then keep it otherwise replace the non number value with a 'NaN.
+    df['Day'] = df['Day'].where(df['Day'].str.isdigit(), 'NaN')
+    # check if the Month column is a number if it is a number then keep it otherwise replace the non number value with a 'NaN.
+    df['Month'] = df['Month'].where(df['Month'].isin(d), 'NaN')
+    df.replace('NaN', np.nan, inplace=True)
+
+    #
+    # MISSING DATA ANALYSIS HERE
+
+
+
+    #
+    # Removing all rows with missing values in Day
+    df = df.dropna()
+    # change the Month Number column to int
+    df['Month Number'] = df['Month Number'].astype(int)
+    # create a new column for Date 
+    df['Date'] = df['Month Number'].astype(str) + '/' + df['Day'].astype(str) + '/' + df['Year'].astype(str)
+    # change the Date column to datetime
+    df['Date'] = pd.to_datetime(df['Date'])
+    # strip the whitespace from the Attendance Type column
+    df['Attendance Type'] = df['Attendance Type'].str.strip()
+
+    # abbreviations for attendance
+    attendance_key = {
+        "P": "Present",
+        "PL": "Paid Leave",
+        "SL": "Sick Leave",
+        "HPL": "Half day PL",
+        "HSL": "Half day SL",
+        "WFH": "Work from home",
+        "FFL": "Floting festival leave",
+        "HFFL": "Half Day Floting festival leave",
+        "BL": "Birthday Leave",
+        "LWP": "Leave without pay",
+        "HLWP": "Half day Leave without pay",
+        "BRL": "Bereavement Leave",
+        "HBRL": "Half Bereavement Leave",
+        "HWFH": "Half Work From Home",
+        "WO": "Weekly Off",
+        "HO": "Holiday Off",
+        "ML": "Menstrual Leave",
+        "HML": "Half Day ML"
+    }
+
+    # create a dataframe for the attendance key with the columns Attendance Type and Abbreviation
+    attendance_key_df = pd.DataFrame(attendance_key.items(), columns=['Abbreviation', 'Attendance Type'])
+
+    # merge the attendance key dataframe with the main dataframe
+    # combine the df and attendance_key_df on the Abbreviation column and remove the Abbreviation column
+    df1 = df.merge(attendance_key_df, left_on='Attendance Type', right_on='Abbreviation')
+    # drop the Abbreviation column from df1
+    df1 = df1.drop(columns=['Abbreviation'])
+    df1['weekday'] = df1['Date'].dt.day_name()
+
+    # streamlit dashboard
+    # set page to wide
+    # st.set_page_config(layout="wide")
+
+    # Single Metrics
+    df1_by_attendance_type_x_subset_pct = df1[df1['Attendance Type_x'].isin(['P', 'WFH', 'SL'])]
+    df1_by_attendance_type_x = df1_by_attendance_type_x_subset_pct.groupby(by='Attendance Type_x')['Attendance Type_x'].count()
+    percentages = []
+    for i in df1_by_attendance_type_x:
+        percent = (i / df1_by_attendance_type_x.sum()) * 100
+        percentages.append(f'{percent:.2f}%')
+
+    # Single Metrics
+    a1, a2, a3 = st.columns(3)
+    a1.metric('Present %', percentages[0])
+    a2.metric('Work From Home %', percentages[2])
+    a3.metric('Sick Leave %', percentages[1])
+
+    b1, b2 = st.columns(2)
+    # get the count of each attendance type by weekday only using WFH and P
+    df1_by_attendance_type_x_subset_type = df1[df1['Attendance Type_x'].isin(['WFH', 'P'])]
+    df1_by_attendance_type_x_weekday = df1_by_attendance_type_x_subset_type.groupby(by=['Attendance Type_x', 'weekday'])['Attendance Type_x'].count()
+    # create a stacked bar chart
+    attendance_type_weekday_fig = go.Figure(data=[
+        go.Bar(name='Present', x=df1_by_attendance_type_x_weekday['P'].index, y=df1_by_attendance_type_x_weekday['P'].values, text=df1_by_attendance_type_x_weekday['P'].values),
+        go.Bar(name='Work from home', x=df1_by_attendance_type_x_weekday['WFH'].index, y=df1_by_attendance_type_x_weekday['WFH'].values, text=df1_by_attendance_type_x_weekday['WFH'].values),
+    ])
+    # Chart settings
+    attendance_type_weekday_fig.update_layout(
+        # title of the chart
+        title_text='Work Preference of Employees by Weekday',
+        # label the x axis
+        xaxis_title="Weekday",
+        # label the y axis
+        yaxis_title="Count of Attendance Type",
+        # set the height and width of the chart
+        height=600, width=700,
+        # set the legend to the top right of the chart
+        legend=dict(x=1, y=1),
+        # set the barmode to stack
+        barmode='stack'
+    )
+    # order the weekday column
+    attendance_type_weekday_fig.update_xaxes(categoryorder='array', categoryarray=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+    # add to streamlit dashboard without adding the table
+    bar_plot = b2.plotly_chart(attendance_type_weekday_fig, use_container_width=True)
+    # explain what I did, what did I learn from this
+    b1.markdown('''
+        ## Questions
+        - What is the work preference of employees by weekday?
+            - Overall for this company people prefer to work in the office throught the week. 
+        - What percentage of people are taking sick leave?
+            - Approximately 0.95% of people are taking sick leave.
+        - From Monday - Friday what days do people prefer to work from home?
+            - People prefer to work from home on Thursday & Friday (possibly a hybrid type of job).
+        ## What did I learn?
+        For this project I learned how to use a library called "Plotly" which is used to make interactive vizualizations. I also learned how to use "Streamlit" to make dashboards. 
+        Using a HR dataset I found on Github I was able create a dashboard using Streamlit and Plotly. Besides learning how to use Plotly and Streamlit
+        I also got to improve my Python, Pandas & Critical Thinking skills as well from this project. 
+    ''')
+    # 2 barcharts
+    c1, c2 = st.columns(2)
+    # create a line plot to show the trend of attendance type by Present
+    df_present = df1[df1['Attendance Type_x'] == 'P']
+    # group by date
+    df_present_groupby = df_present.groupby(by='Date')['Attendance Type_x'].count()
+    # create a line plot with df_present with a month interval
+    line_plot_fig = px.line(df_present_groupby, x=df_present_groupby.index, y=df_present_groupby.values, title='Trend of Attendance Type by Present')
+    # Chart settings
+    line_plot_fig.update_layout(
+        # title of the chart
+        title_text='Trend of Attendance Type by Present',
+        # label the x axis
+        xaxis_title="Date",
+        # label the y axis
+        yaxis_title="Count of Attendance Type"
+    )
+    # add a trace to the line plot
+    line_plot_fig.update_xaxes(rangeslider_visible=True)
+    line_plot_P = c1.plotly_chart(line_plot_fig, use_container_width=True)
+
+    # create a line plot to show the trend of attendance type by Work from home
+    df_wfh = df1[df1['Attendance Type_x'] == 'WFH']
+    # group by date
+    df_wfh_groupby = df_wfh.groupby(by='Date')['Attendance Type_x'].count()
+    # create a line plot with df_present with a month interval
+    line_plot_wfh_fig = px.line(df_wfh_groupby, x=df_wfh_groupby.index, y=df_wfh_groupby.values, title='Trend of Attendance Type by Work from home')
+    # Chart settings
+    line_plot_wfh_fig.update_layout(
+        # title of the chart
+        title_text='Trend of Attendance Type by Work from home',
+        # label the x axis
+        xaxis_title="Date",
+        # label the y axis
+        yaxis_title="Count of Attendance Type"
+    )
+
+    line_plot_wfh_fig.update_xaxes(rangeslider_visible=True)
+    line_plot_WFH = c2.plotly_chart(line_plot_wfh_fig, use_container_width=True)
 page_names_to_funcs = {
     "Home": intro,
     "Emerson Co-op Experience": emerson_coop_experience,
-    "SQL Database Project": SQL_Database_Project 
-    # "Personal Projects": personal_projects,
+    "SQL Database Project": SQL_Database_Project,
+    "Personal Projects": personal_projects
 }
 
 demo_name = st.sidebar.selectbox("Choose a Project", page_names_to_funcs.keys())
