@@ -572,7 +572,7 @@ page_names_to_funcs = {
     "Home": intro,
     "Emerson Co-op Experience": emerson_coop_experience,
     "SQL Database Project": SQL_Database_Project,
-    "Personal Projects": personal_projects
+    "HR Analytics": personal_projects
 }
 
 demo_name = st.sidebar.selectbox("Choose a Project", page_names_to_funcs.keys())
