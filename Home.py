@@ -3,7 +3,7 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 from datetime import datetime
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import missingno as msno
 import numpy as np
 import plotly.graph_objects as go
