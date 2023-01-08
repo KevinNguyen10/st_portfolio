@@ -380,9 +380,9 @@ order bY COUNT(S.ShowID) DESC;
 def personal_projects():
     # ETL Process
     # load the datasets
-    apr_df = pd.read_csv('Attendance_Sheets\Apr_Attendance.csv')
-    june_df = pd.read_csv('Attendance_Sheets\June_Attendance.csv')
-    may_df = pd.read_csv('Attendance_Sheets\May_Attendance.csv')
+    apr_df = pd.read_csv('Apr_Attendance.csv')
+    june_df = pd.read_csv('June_Attendance.csv')
+    may_df = pd.read_csv('May_Attendance.csv')
     # unpivot the dataframes using melt function
     apr_unpivot = apr_df.melt(id_vars=['Unnamed: 1', 'AtliQ'], var_name='Date', value_name='Attendance')
     june_unpivot = june_df.melt(id_vars=['Unnamed: 1', 'AtliQ'], var_name='Date', value_name='Attendance')
