@@ -3,9 +3,9 @@ import streamlit as st
 from PIL import Image
 import pandas as pd
 from datetime import datetime
-# import matplotlib.pyplot as plt
-# import missingno as msno
-# import numpy as np
+import matplotlib.pyplot as plt
+import missingno as msno
+import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
@@ -578,3 +578,5 @@ page_names_to_funcs = {
 demo_name = st.sidebar.selectbox("Choose a Project", page_names_to_funcs.keys())
 st.sidebar.success("Select a project above.")
 page_names_to_funcs[demo_name]()
+
+# 
