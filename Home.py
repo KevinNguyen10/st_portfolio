@@ -4,8 +4,8 @@ from PIL import Image
 import pandas as pd
 from datetime import datetime
 # import matplotlib.pyplot as plt
-import missingno as msno
-import numpy as np
+# import missingno as msno
+# import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
