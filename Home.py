@@ -1,7 +1,14 @@
 # import necessary libraries
 import streamlit as st
 from PIL import Image
-
+import pandas as pd
+from datetime import datetime
+import matplotlib.pyplot as plt
+import missingno as msno
+import numpy as np
+import plotly.graph_objects as go
+import plotly.express as px
+import streamlit as st
 st.set_page_config(layout="wide")
 
 def load_css(file_name):
@@ -371,16 +378,6 @@ order bY COUNT(S.ShowID) DESC;
     image3 = Image.open('SQLQ3.png')
     st.image(image3, caption='SQL Query 3')
 def personal_projects():
-    # import necessary libraries
-    import pandas as pd
-    from datetime import datetime
-    import matplotlib.pyplot as plt
-    import missingno as msno
-    import numpy as np
-    import plotly.graph_objects as go
-    import plotly.express as px
-    import streamlit as st
-
     # ETL Process
     # load the datasets
     apr_df = pd.read_csv('Attendance_Sheets\Apr_Attendance.csv')
